@@ -50,7 +50,7 @@ void PlayGame()
 		FText Guess = GetValidGuess(); 
 		
 		// submit valid guess to the game and receive count
-		FBullCowCount BullCowCount = BCGame.SubmitGuess(Guess);
+		FBullCowCount BullCowCount = BCGame.SubmitValidGuess(Guess);
 
 		std::cout << "Bulls: " << BullCowCount.Bulls;
 		std::cout << ". Cows: " << BullCowCount.Cows << ".\n\n";
@@ -84,6 +84,9 @@ FText GetValidGuess()
 			break;
 		case EGuessStatus::Not_Lowercase:
 			std::cout << "Please insert only lowercase letters.\n";
+			break;
+		default:
+			// assume the guess is valid
 			break;
 		}
 		std::cout << std::endl;
