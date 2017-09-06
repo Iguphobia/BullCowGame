@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "FBullCowGame.h"
+#include <map>
+#define TMAP std::map
 
 using FString = std::string;
 using int32 = int32;
@@ -11,12 +13,13 @@ FBullCowGame::FBullCowGame()
 
 void FBullCowGame::Reset()
 {
-	constexpr int32 MAX_TRIES = 8;
+	constexpr int32 MAX_TRIES = 5;
 	MyMaxTries = MAX_TRIES;
 
 	const FString HIDDEN_WORD = "planet";
 	MyHiddenWord = HIDDEN_WORD;
 	
+	bGameIsWon = false;
 	MyCurrentTry = 1;
 }
 
@@ -37,18 +40,43 @@ int32 FBullCowGame::GetHiddenWordLength() const
 
 bool FBullCowGame::IsGameWon() const
 {
-	return false;
+	return bGameIsWon;
+}
+
+bool FBullCowGame::IsIsogram(FString Word) const
+{
+	// treat 0 and 1 letter words as isogram
+	if (Word.length() <= 1)
+		return true;
+
+	TMAP<char, bool> LetterSeen; // setup map
+	for (auto Letter : Word) // for all letters of the word
+	{
+		Letter = tolower(Letter);
+
+		if (LetterSeen[Letter])
+		{
+			return false;
+		}
+		else
+		{
+			LetterSeen[Letter] = true;
+		}
+			
+	}
+
+	return true;
 }
 
 EGuessStatus FBullCowGame::ValidateGuess(FString CurrentGuess) const
 {
-	if (false) // if the guess isn't an isogram
+	if (!IsIsogram(CurrentGuess)) // if the guess isn't an isogram
 	{
-		return EGuessStatus::Not_Isogram;
+			return EGuessStatus::Not_Isogram;
 	}
 	else if (false) // if the guess isn't all lowercase
 	{
-		return EGuessStatus::Not_Lowercase;
+		return EGuessStatus::Not_Lowercase; // TODO write function
 	}
 	else if (CurrentGuess.length() != GetHiddenWordLength()) // if the guess length is wrong
 	{
@@ -86,5 +114,14 @@ FBullCowCount FBullCowGame::SubmitValidGuess(FString Guess)
 			}
 		}
 	}
+	if (BullCowCount.Bulls == GetHiddenWordLength()) 
+	{
+		bGameIsWon = true;
+	}
+	else
+	{
+		bGameIsWon = false;
+	}
+
 	return BullCowCount;
 }

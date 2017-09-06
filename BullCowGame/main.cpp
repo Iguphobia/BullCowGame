@@ -13,6 +13,7 @@ using int32 = int;
 void PrintIntro();
 void PlayGame();
 FText GetValidGuess();
+FText PrintGameSummary();
 bool AskToPlayAgain();
 
 FBullCowGame BCGame; // instantiante a new game
@@ -33,7 +34,7 @@ int main()
 // introduce the game
 void PrintIntro() 
 {
-	std::cout << "Welcome to Bulls and Cows!\n";
+	std::cout << "\n\nWelcome to Bulls and Cows!\n";
 	std::cout << "Can you guess what " << BCGame.GetHiddenWordLength();
 	std::cout << " letter isogram I am thinking?\n";
 	std::cout << std::endl;
@@ -44,8 +45,8 @@ void PlayGame()
 	BCGame.Reset(); // starts a new game
 	int32 MaxTries = BCGame.GetMaxTries();
 
-	// loop the number of guesses
-	for (int32 i = 1; i <= MaxTries; i++) // TODO change FOR to While when validating tries
+	// loop the number of tries while the game is not won
+	while (!BCGame.IsGameWon() && BCGame.GetCurrentTry() <= MaxTries)
 	{
 		FText Guess = GetValidGuess(); 
 		
@@ -56,7 +57,7 @@ void PlayGame()
 		std::cout << ". Cows: " << BullCowCount.Cows << ".\n\n";
 	}
 
-	// TODO show game summary
+	std::cout << PrintGameSummary();
 }
 
 //take a guess from the player
@@ -77,7 +78,7 @@ FText GetValidGuess()
 		switch (Status)
 		{
 		case EGuessStatus::Not_Isogram:
-			std::cout << "The word must be an isogram (without repeating letters)\n";
+			std::cout << "The word must be an isogram (no repeating letters).\n";
 			break;
 		case EGuessStatus::Wrong_Length:
 			std::cout << "Please enter a " << BCGame.GetHiddenWordLength() << " letter word.\n";
@@ -95,11 +96,24 @@ FText GetValidGuess()
 	return Guess;
 }
 
+FText PrintGameSummary()
+{
+	if (BCGame.IsGameWon())
+	{
+		return "Congratulations, you win the game!\n";
+	}
+	else
+	{
+		return "You lose! Better luck next time.\n";
+	}
+}
+
 // asks if the player wants to play again
 bool AskToPlayAgain()
 {
 	FText PlayAgainAns;
-	std::cout << "Do you want to play again?\n";
+	std::cout << "Do you want to play again with the same hidden word? ";
 	std::getline(std::cin, PlayAgainAns);
+
 	return (PlayAgainAns[0] == 'y') || (PlayAgainAns[0] == 'Y');
 }
